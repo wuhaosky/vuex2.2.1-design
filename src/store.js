@@ -264,7 +264,7 @@ function resetStoreVM(store, state, hot) {
     forEachValue(wrappedGetters, (fn, key) => {
         // use computed to leverage its lazy-caching mechanism
         computed[key] = () => fn(store)
-        Object.defineProperty(store.getters, key, {
+        Object.defineProperty(store.getters, key, {  // 读store的getter实际上是读store._vm的计算属性
             get: () => store._vm[key],
             enumerable: true // for local getters
         })
@@ -275,7 +275,7 @@ function resetStoreVM(store, state, hot) {
     // some funky global mixins
     const silent = Vue.config.silent
     Vue.config.silent = true // 设置 silent 为 true 的目的是为了取消这个 _vm 的所有日志和警告。
-    store._vm = new Vue({
+    store._vm = new Vue({ // 使用vue实例来保证store的getter是响应式的，是响应store.state的
         data: {
             $$state: state
         },
